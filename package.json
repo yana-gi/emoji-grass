@@ -1,6 +1,6 @@
 {
   "name": "emoji-grass",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Shows the grass of GitHub by emoji",
   "main": "index.js",
   "bin": {
@@ -29,5 +29,5 @@
   "bugs": {
     "url": "https://github.com/yana-gi/emoji-grass/issues"
   },
-  "homepage": "https://github.com/yana-gi/emoji#readme"
+  "homepage": "https://github.com/yana-gi/emoji-grass#readme"
 }

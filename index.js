@@ -40,7 +40,7 @@ function showGrass (contributions, character) {
 
 function main () {
   program
-    .name('github-emoji-grass')
+    .name('emoji-grass')
     .requiredOption('-u, --username [username]', 'Specify your username of GitHub account.')
     .option('-c, --character [character]', 'Specify a single character to display.', '🌱')
     .parse()

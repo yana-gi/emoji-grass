@@ -2,11 +2,11 @@
 Shows the grass of GitHub by emoji
 ## install
 ```
-$ npm install emoji-grass
+$ npm install -g emoji-grass
 ```
 ## Usage
 ```
-Usage: github-emoji-grass [options]
+Usage: emoji-grass [options]
 
 Options:
   -u, --username [username]    Specify your username of GitHub account.
@@ -15,7 +15,7 @@ Options:
 ```
 
 ```
-$ npm emoji-grass -u yana-gi
+$ emoji-grass -u yana-gi
                                                         🌱          🌱                                🌱  
             🌱                                🌱🌱                🌱          🌱    🌱            🌱🌱    
                                               🌱    🌱🌱  🌱          🌱        🌱        🌱      🌱    
@@ -27,7 +27,7 @@ $ npm emoji-grass -u yana-gi
 ```
 
 ```
-$ npm emoji-grass -u yana-gi -c 🍺
+$ emoji-grass -u yana-gi -c 🍺
                                                         🍺          🍺                                🍺  
             🍺                                🍺🍺                🍺          🍺    🍺            🍺🍺    
                                               🍺    🍺🍺  🍺          🍺        🍺        🍺      🍺    
