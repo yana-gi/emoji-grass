@@ -1,6 +1,6 @@
 {
   "name": "emoji-grass",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Shows the grass of GitHub by emoji",
   "main": "index.js",
   "bin": {
