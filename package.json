@@ -1,7 +1,7 @@
 {
   "name": "emoji-grass",
-  "version": "0.0.3",
-  "description": "Shows the grass of GitHub by emoji",
+  "version": "0.1.0",
+  "description": "Displays the grass of GitHub by emoji",
   "main": "index.js",
   "bin": {
     "emoji-grass": "./index.js"
@@ -12,9 +12,10 @@
   "author": "yana-gi",
   "license": "MIT",
   "dependencies": {
+    "@octokit/graphql": "^4.6.1",
     "commander": "^7.2.0",
-    "graphemesplit": "^2.4.2",
-    "node-fetch": "^2.6.1"
+    "dotenv": "^9.0.2",
+    "graphemesplit": "^2.4.2"
   },
   "repository": {
     "type": "git",
