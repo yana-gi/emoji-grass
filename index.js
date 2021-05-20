@@ -1,65 +1,93 @@
 #! /usr/bin/env node
 
-const fetch = require('node-fetch')
+const fs = require('fs').promises
+const { graphql } = require('@octokit/graphql')
+const dotenv = require('dotenv')
 const program = require('commander')
 const graphemesplit = require('graphemesplit')
 
-async function fetchContributions (userName) {
-  const response = await fetch(`https://github.com/users/${userName}/contributions`)
-  const text = await response.text()
-  return text
-}
-
-function parseContributions (text) {
-  const contributionRows = text.toString().match(/.*data-count=.*data-date=.*/g)
-
-  return contributionRows.map(contributionRow => {
-    const regexp = /.*data-count="(?<data_count>.*)".*data-date="(?<data_date>.*)" data-level=.*/g
-    const data = regexp.exec(contributionRow)
-    return {
-      data_date: data.groups.data_date,
-      data_count: data.groups.data_count
+const fetchContribution = async ({ userName }) => {
+  const graphqlWithAuth = graphql.defaults({
+    headers: {
+      authorization: `token ${process.env.GITHUB_TOKEN}`
     }
   })
+
+  const query =
+    `query getContribution($userName:String!) {
+      user(login: $userName) {
+        contributionsCollection {
+          contributionCalendar {
+            weeks {
+              contributionDays {
+                contributionCount
+                date
+              }
+            }
+          }
+        }
+      }
+    }`
+  return await graphqlWithAuth(query, { userName: userName })
 }
 
-function showGrass (contributions, character) {
-  const Grasses = contributions.map(contribution => { return contribution.data_count > 0 ? character : '  ' })
+function showGrass (contributionWeeks, character) {
+  const grassWeeks = []
 
-  const cnt = 7
-  const allWeekGrasses = []
-  for (let i = 0; i < Math.ceil(Grasses.length / cnt); i++) {
-    const j = i * cnt
-    const WeekGrasses = Grasses.slice(j, j + cnt)
-    allWeekGrasses.push(WeekGrasses)
-  }
+  contributionWeeks.forEach((week, index) => {
+    grassWeeks[index] =
+      week.contributionDays.map(contribution => { return contribution.contributionCount > 0 ? character : '  ' })
+  })
 
   const transpose = a => a[0].map((_, c) => a.map(r => r[c]))
-  transpose(allWeekGrasses).forEach(WeekGrasses => console.log(WeekGrasses.join('')))
+  transpose(grassWeeks).forEach(week => console.log(week.join('')))
 }
 
-function main () {
+async function main () {
   program
     .name('emoji-grass')
-    .requiredOption('-u, --username [username]', 'Specify your username of GitHub account.')
-    .option('-c, --character [character]', 'Specify a single character to display.', '🌱')
-    .parse()
 
-  const options = program.opts()
+  program
+    .command('display', { isDefault: true })
+    .arguments('<username>')
+    .description('Display the grass of GitHub by emoji')
+    .option('-c, --character [character]', 'Specify a single character to display', '🌱')
+    .action(async (username, options) => {
+      try {
+        dotenv.config()
+        if (process.env.GITHUB_TOKEN === undefined) {
+          console.log('You need to set up personal access token of GitHub')
+          return
+        }
 
-  if (graphemesplit(options.character).length !== 1) {
-    console.log('Character must be a single')
-    return
-  }
-
-  fetchContributions(options.username)
-    .then(text => {
-      const contributions = parseContributions(text)
-      showGrass(contributions, options.character)
+        if (graphemesplit(options.character).length !== 1) {
+          console.log('Character must be a single')
+          return
+        }
+        const response = await fetchContribution({ userName: username })
+        const contributionWeeks = response.user.contributionsCollection.contributionCalendar.weeks
+        await showGrass(contributionWeeks, options.character)
+      } catch (err) {
+        console.log(err.message)
+      }
     })
-    .catch(() => {
-      console.log('An error has occurred.')
+
+  program
+    .command('settoken')
+    .arguments('<token>')
+    .description('Set up the personal access token of GitHub\n' +
+      'Generate a token in https://github.com/settings/tokens')
+    .action(async (token) => {
+      try {
+        await fs.writeFile('.env', `GITHUB_TOKEN = ${token}`)
+        await dotenv.config()
+        await console.log('Set up personal access token of GitHub')
+      } catch (err) {
+        console.log(err.message)
+      }
     })
+
+  program.parse()
 }
 
 main()
