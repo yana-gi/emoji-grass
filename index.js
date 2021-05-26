@@ -79,7 +79,7 @@ async function main () {
       'Generate a token in https://github.com/settings/tokens')
     .action(async (token) => {
       try {
-        await fs.writeFile('.env', `GITHUB_TOKEN = ${token}`)
+        await fs.writeFile('~/.grass_env', `GITHUB_TOKEN = ${token}`)
         await dotenv.config()
         await console.log('Set up personal access token of GitHub')
       } catch (err) {
