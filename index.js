@@ -1,5 +1,7 @@
 #! /usr/bin/env node
 
+const ENV_PATH = process.env.HOME + '/.grass_env'
+
 const fs = require('fs').promises
 const { graphql } = require('@octokit/graphql')
 const dotenv = require('dotenv')
@@ -54,7 +56,7 @@ async function main () {
     .option('-c, --character [character]', 'Specify a single character to display', '🌱')
     .action(async (username, options) => {
       try {
-        dotenv.config()
+        dotenv.config({ path: ENV_PATH })
         if (process.env.GITHUB_TOKEN === undefined) {
           console.log('You need to set up personal access token of GitHub')
           return
@@ -79,8 +81,8 @@ async function main () {
       'Generate a token in https://github.com/settings/tokens')
     .action(async (token) => {
       try {
-        await fs.writeFile('~/.grass_env', `GITHUB_TOKEN = ${token}`)
-        await dotenv.config()
+        await fs.writeFile(ENV_PATH, `GITHUB_TOKEN = ${token}`)
+        await dotenv.config({ path: ENV_PATH })
         await console.log('Set up personal access token of GitHub')
       } catch (err) {
         console.log(err.message)
